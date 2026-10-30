@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Application Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Job Application Tracker</h1>
+    </header>
+
+    <!-- ADD APPLICATION FORM -->
+    <form id="add-app-form" class="add-app-bar">
+      <input
+        type="text"
+        id="company-name-input"
+        placeholder="Name of Company"
+        required
+      />
+      <input
+        type="text"
+        id="job-title-input"
+        placeholder="Job Title"
+        required
+      />
+      <select id="job-status-input">
+        <option value="applied">Applied</option>
+        <option value="interviewed">Interviewed</option>
+        <option value="rejected">Rejected</option>
+        <option value="offered">Offered</option>
+      </select>
+      <input type="date" id="date-applied-input" required />
+      <textarea id="note-input" placeholder="Notes"></textarea>
+      <button id="add-job-btn">Add Job</button>
+    </form>
+
+    <main>
+      <!-- Columns for List of Applications -->
+      <div id="col-applied">
+        <h2 class="column-title">Applied</h2>
+        <ul id="list-applied" class="application-list"></ul>
+      </div>
+      <div id="col-interviewed">
+        <h2 class="column-title">Interviewed</h2>
+        <ul id="list-interviewed" class="application-list"></ul>
+      </div>
+      <div id="col-rejected">
+        <h2 class="column-title">Rejected</h2>
+        <ul id="list-rejected" class="application-list"></ul>
+      </div>
+      <div id="col-offered">
+        <h2 class="column-title">Offered</h2>
+        <ul id="list-offered" class="application-list"></ul>
+      </div>
+    </main>
+    <!-- Script at the bottom so page loads above first -->
+    <script src="app.js"></script>
+  </body>
+</html>
