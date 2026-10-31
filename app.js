@@ -1,5 +1,4 @@
 // List of applications will fill from local storage
-//
 let applications = [];
 let contactInfos = [];
 // Save applications to local storage
@@ -27,6 +26,7 @@ function loadContactInfos() {
     contactInfos = JSON.parse(raw);
   }
 }
+
 // Build a list element for a single application
 function createApplicationCard(props) {
   const application = props.application;
@@ -75,8 +75,8 @@ function createApplicationCard(props) {
   changeStatus.append(
     appliedOption,
     interviewedOption,
-    rejectedOption,
     offeredOption,
+    rejectedOption,
   );
   changeStatus.value = application.jobStatus;
   changeStatus.addEventListener("change", function (event) {
@@ -244,36 +244,97 @@ function handleSearchFilter() {
 const searchBar = document.querySelector("#search-bar");
 searchBar.addEventListener("input", handleSearchFilter);
 
-function handleAddContactInfo(event) {
+async function handleAddContactInfo(event) {
   event.preventDefault();
   const contactNameInput = document.querySelector("#contact-name");
   const contactEmailInput = document.querySelector("#contact-email");
   const contactMessageInput = document.querySelector("#contact-message");
+  const contactFeedback = document.querySelector("#contact-feedback");
+  const submitButton = document.querySelector("#submit-contact-info");
 
   const contactName = contactNameInput.value.trim();
   const contactEmail = contactEmailInput.value.trim();
-  const contactMessage = contactMessageInput.value;
+  const contactMessage = contactMessageInput.value.trim();
+
+  const errorMessage = validateContact(
+    contactName,
+    contactEmail,
+    contactMessage,
+  );
+  if (errorMessage !== "") {
+    contactFeedback.textContent = errorMessage;
+    contactFeedback.classList.remove("success");
+    contactFeedback.classList.add("error");
+    return;
+  }
 
   const newContactInfo = {
+    id: Date.now(),
     contactName,
     contactEmail,
     contactMessage,
   };
 
-  contactInfos.push(newContactInfo);
-  saveContactInfos();
+  submitButton.disabled = true;
+  contactFeedback.textContent = "Sending...";
+  contactFeedback.classList.remove("error", "success");
 
-  contactNameInput.value = "";
-  contactEmailInput.value = "";
-  contactMessageInput.value = "";
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newContactInfo),
+    });
+
+    // fetch only throws on network failure
+    if (!response.ok) {
+      throw new Error("Server responded with status " + response.status);
+    }
+
+    // Only save and clear after the request succeeded
+    contactInfos.push(newContactInfo);
+    saveContactInfos();
+
+    contactNameInput.value = "";
+    contactEmailInput.value = "";
+    contactMessageInput.value = "";
+
+    contactFeedback.textContent = "Thanks! Your message was sent.";
+    contactFeedback.classList.add("success");
+  } catch (error) {
+    contactFeedback.textContent =
+      "Sorry, your message could not be sent. Please try again.";
+    contactFeedback.classList.add("error");
+  } finally {
+    submitButton.disabled = false;
+  }
 }
 
 const addContactForm = document.querySelector("#contact-form");
 addContactForm.addEventListener("submit", handleAddContactInfo);
 
+// Returns an error message, or "" if the input is valid
+function validateContact(name, email, message) {
+  if (name === "" || email === "" || message === "") {
+    return "Please fill out all fields.";
+  }
+  if (name.length < 2) {
+    return "Name must be at least 2 characters.";
+  }
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    return "Please enter a valid email address.";
+  }
+  if (message.length < 10) {
+    return "Message must be at least 10 characters.";
+  }
+  return "";
+}
+
 // init function to load and render application from local storage
 function init() {
   loadApplications();
+  loadContactInfos();
   renderBoard();
 }
 
