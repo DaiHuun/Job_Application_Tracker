@@ -1,9 +1,27 @@
-// List of applications from form input stored in an array
+// List of applications will fill from local storage
 let applications = [];
+
+// Save applications to local storage
+function saveApplications() {
+  localStorage.setItem("applicationData", JSON.stringify(applications));
+}
+
+// Load applications from local storage
+function loadApplications() {
+  const raw = localStorage.getItem("applicationData");
+
+  // Handles first visit
+  if (raw === null) {
+    saveApplications();
+  } else {
+    applications = JSON.parse(raw);
+  }
+}
 
 // Build a list element for a single application
 function createApplicationCard(application) {
   const card = document.createElement("li");
+  card.classList.add("application-card");
   card.dataset.id = application.id;
 
   const companyName = document.createElement("p");
@@ -20,13 +38,16 @@ function createApplicationCard(application) {
   const note = document.createElement("span");
   note.textContent = application.note;
   div.append(jobStatus, dateApplied, note);
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("delete-btn");
+  deleteButton.textContent = "Delete";
 
-  card.append(companyName, jobTitle, div);
+  card.append(companyName, jobTitle, div, deleteButton);
   return card;
 }
 
 // clears columns and renders applications into the column that matches status
-function renderBoard(applicationList) {
+function renderBoard() {
   const appliedList = document.querySelector("#list-applied");
   const interviewedList = document.querySelector("#list-interviewed");
   const rejectedList = document.querySelector("#list-rejected");
@@ -36,7 +57,7 @@ function renderBoard(applicationList) {
   rejectedList.textContent = "";
   offeredList.textContent = "";
 
-  applicationList.forEach(function (application) {
+  applications.forEach(function (application) {
     const newCard = createApplicationCard(application);
     if (application.jobStatus === "applied") {
       appliedList.append(newCard);
@@ -75,7 +96,9 @@ function handleAddApplication(event) {
   };
 
   applications.push(newApplication);
-  renderBoard(applications);
+
+  saveApplications();
+  renderBoard();
 
   companyNameInput.value = "";
   jobTitleInput.value = "";
@@ -84,5 +107,32 @@ function handleAddApplication(event) {
 }
 
 // Connects form to handler
-const submitForm = document.querySelector(`#add-app-form`);
-submitForm.addEventListener("submit", handleAddApplication);
+const addAppForm = document.querySelector(`#add-app-form`);
+addAppForm.addEventListener("submit", handleAddApplication);
+
+// delete function to delete application
+function handleDeleteApplication(event) {
+  const card = event.target.closest(".application-card");
+  if (!card) {
+    return;
+  }
+  const appId = parseInt(card.dataset.id);
+
+  if (event.target.classList.contains("delete-btn")) {
+    applications = applications.filter(
+      (application) => application.id !== appId,
+    );
+    saveApplications();
+    renderBoard();
+  }
+}
+const appBoard = document.querySelector(".board");
+appBoard.addEventListener("click", handleDeleteApplication);
+
+// init function to load and render application from local storage
+function init() {
+  loadApplications();
+  renderBoard();
+}
+
+init();
