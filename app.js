@@ -331,6 +331,30 @@ function validateContact(name, email, message) {
   return "";
 }
 
+// Function show one page, and hide the others
+function showPage(pageName) {
+  document.querySelectorAll(".page").forEach(function (page) {
+    page.classList.add("hidden");
+  });
+  document.querySelector(`#page-${pageName}`).classList.remove("hidden");
+
+  document.querySelectorAll(".nav-link").forEach(function (link) {
+    link.classList.toggle("active", link.dataset.page === pageName);
+  });
+}
+
+function handleNavClick(event) {
+  const navLink = event.target.closest(".nav-link");
+  if (!navLink) {
+    return;
+  }
+  event.preventDefault();
+  showPage(navLink.dataset.page);
+}
+
+const navBar = document.querySelector("#nav-bar");
+navBar.addEventListener("click", handleNavClick);
+
 // init function to load and render application from local storage
 function init() {
   loadApplications();
