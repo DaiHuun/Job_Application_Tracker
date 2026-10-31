@@ -29,7 +29,7 @@ function createApplicationCard(application) {
   const jobTitle = document.createElement("p");
   jobTitle.textContent = application.jobTitle;
 
-  const div = document.createElement("div");
+  const status = document.createElement("div");
   const jobStatus = document.createElement("span");
   jobStatus.classList.add(application.jobStatus);
   jobStatus.textContent = application.jobStatus;
@@ -37,12 +37,37 @@ function createApplicationCard(application) {
   dateApplied.textContent = application.dateApplied;
   const note = document.createElement("span");
   note.textContent = application.note;
-  div.append(jobStatus, dateApplied, note);
+  status.append(jobStatus, dateApplied, note);
+
+  const actions = document.createElement("div");
+  actions.classList.add("card-actions");
   const deleteButton = document.createElement("button");
   deleteButton.classList.add("delete-btn");
   deleteButton.textContent = "Delete";
+  const changeStatus = document.createElement("select");
+  changeStatus.classList.add("select-status-change");
+  const appliedOption = document.createElement("option");
+  appliedOption.value = "applied";
+  appliedOption.textContent = "Applied";
+  const interviewedOption = document.createElement("option");
+  interviewedOption.value = "interviewed";
+  interviewedOption.textContent = "Interviewed";
+  const rejectedOption = document.createElement("option");
+  rejectedOption.value = "rejected";
+  rejectedOption.textContent = "Rejected";
+  const offeredOption = document.createElement("option");
+  offeredOption.value = "offered";
+  offeredOption.textContent = "Offered";
+  changeStatus.append(
+    appliedOption,
+    interviewedOption,
+    rejectedOption,
+    offeredOption,
+  );
+  changeStatus.value = application.jobStatus;
+  actions.append(changeStatus, deleteButton);
 
-  card.append(companyName, jobTitle, div, deleteButton);
+  card.append(companyName, jobTitle, status, actions);
   return card;
 }
 
@@ -110,12 +135,13 @@ function handleAddApplication(event) {
 const addAppForm = document.querySelector(`#add-app-form`);
 addAppForm.addEventListener("submit", handleAddApplication);
 
-// delete function to delete application
+// Delete function to delete application
 function handleDeleteApplication(event) {
   const card = event.target.closest(".application-card");
   if (!card) {
     return;
   }
+
   const appId = parseInt(card.dataset.id);
 
   if (event.target.classList.contains("delete-btn")) {
@@ -128,6 +154,30 @@ function handleDeleteApplication(event) {
 }
 const appBoard = document.querySelector(".board");
 appBoard.addEventListener("click", handleDeleteApplication);
+
+// Change Status function
+function handleChangeStatus(event) {
+  const card = event.target.closest(".application-card");
+  if (!card) {
+    return;
+  }
+
+  const appId = parseInt(card.dataset.id);
+
+  if (event.target.classList.contains("select-status-change")) {
+    const foundApplication = applications.find(
+      (application) => application.id === appId,
+    );
+
+    const newStatus = event.target.value;
+    foundApplication.jobStatus = newStatus;
+
+    saveApplications();
+    renderBoard();
+  }
+}
+
+appBoard.addEventListener("change", handleChangeStatus);
 
 // init function to load and render application from local storage
 function init() {
