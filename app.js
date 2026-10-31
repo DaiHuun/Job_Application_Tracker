@@ -25,6 +25,7 @@ function createApplicationCard(application) {
   card.dataset.id = application.id;
 
   const companyName = document.createElement("p");
+  companyName.classList.add("company-name");
   companyName.textContent = application.companyName;
   const jobTitle = document.createElement("p");
   jobTitle.textContent = application.jobTitle;
@@ -82,7 +83,22 @@ function renderBoard() {
   rejectedList.textContent = "";
   offeredList.textContent = "";
 
-  applications.forEach(function (application) {
+  const filterClick = document.querySelector(".filter-btn.active");
+  const selectedFilter = filterClick.dataset.filter;
+  const searchInput = document.querySelector("#search-bar");
+  const searchQuery = searchInput.value.trim().toLowerCase();
+
+  const visibleApplications = applications
+    .filter(function (application) {
+      return (
+        selectedFilter === "all" || application.jobStatus === selectedFilter
+      );
+    })
+    .filter(function (application) {
+      return application.companyName.toLowerCase().includes(searchQuery);
+    });
+
+  visibleApplications.forEach(function (application) {
     const newCard = createApplicationCard(application);
     if (application.jobStatus === "applied") {
       appliedList.append(newCard);
@@ -196,6 +212,13 @@ function handleFilterClick(event) {
 
 const filterBar = document.querySelector("#filter-bar");
 filterBar.addEventListener("click", handleFilterClick);
+
+// Search bar filter function to search by Company Name
+function handleSearchFilter() {
+  renderBoard();
+}
+const searchBar = document.querySelector("#search-bar");
+searchBar.addEventListener("input", handleSearchFilter);
 
 // init function to load and render application from local storage
 function init() {
