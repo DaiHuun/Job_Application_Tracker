@@ -179,6 +179,24 @@ function handleChangeStatus(event) {
 
 appBoard.addEventListener("change", handleChangeStatus);
 
+// Filter function
+function handleFilterClick(event) {
+  const filterButton = event.target.closest(".filter-btn");
+  if (!filterButton) {
+    return;
+  }
+  const removeActive = document.querySelectorAll(".filter-btn.active");
+  removeActive.forEach(function (btn) {
+    btn.classList.remove("active");
+  });
+  filterButton.classList.add("active");
+
+  renderBoard();
+}
+
+const filterBar = document.querySelector("#filter-bar");
+filterBar.addEventListener("click", handleFilterClick);
+
 // init function to load and render application from local storage
 function init() {
   loadApplications();
