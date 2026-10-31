@@ -9,7 +9,6 @@ function saveApplications() {
 // Load applications from local storage
 function loadApplications() {
   const raw = localStorage.getItem("applicationData");
-
   // Handles first visit
   if (raw === null) {
     saveApplications();
@@ -72,6 +71,33 @@ function createApplicationCard(application) {
   return card;
 }
 
+// Function to update counts
+function updateCounts() {
+  const applied = applications.filter(
+    (application) => application.jobStatus === "applied",
+  );
+  const interviewed = applications.filter(
+    (application) => application.jobStatus === "interviewed",
+  );
+  const rejected = applications.filter(
+    (application) => application.jobStatus === "rejected",
+  );
+  const offered = applications.filter(
+    (application) => application.jobStatus === "offered",
+  );
+
+  const totalCount = document.querySelector("#total-count");
+  totalCount.textContent = `${applications.length} Applications`;
+  const appliedCount = document.querySelector("#applied-count");
+  appliedCount.textContent = `${applied.length} Applied`;
+  const interviewedCount = document.querySelector("#interviewed-count");
+  interviewedCount.textContent = `${interviewed.length} Interviewed`;
+  const rejectedCount = document.querySelector("#rejected-count");
+  rejectedCount.textContent = `${rejected.length} Rejected`;
+  const offeredCount = document.querySelector("#offered-count");
+  offeredCount.textContent = `${offered.length} Offered`;
+}
+
 // clears columns and renders applications into the column that matches status
 function renderBoard() {
   const appliedList = document.querySelector("#list-applied");
@@ -110,6 +136,8 @@ function renderBoard() {
       offeredList.append(newCard);
     }
   });
+
+  updateCounts();
 }
 
 // reads inputs, adds new application to array, and renders board
