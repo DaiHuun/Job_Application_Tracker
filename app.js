@@ -1,11 +1,11 @@
 // List of applications will fill from local storage
+//
 let applications = [];
-
+let contactInfos = [];
 // Save applications to local storage
 function saveApplications() {
   localStorage.setItem("applicationData", JSON.stringify(applications));
 }
-
 // Load applications from local storage
 function loadApplications() {
   const raw = localStorage.getItem("applicationData");
@@ -16,7 +16,17 @@ function loadApplications() {
     applications = JSON.parse(raw);
   }
 }
-
+function saveContactInfos() {
+  localStorage.setItem("contactData", JSON.stringify(contactInfos));
+}
+function loadContactInfos() {
+  const raw = localStorage.getItem("contactData");
+  if (raw === null) {
+    saveContactInfos();
+  } else {
+    contactInfos = JSON.parse(raw);
+  }
+}
 // Build a list element for a single application
 function createApplicationCard(props) {
   const application = props.application;
@@ -55,12 +65,13 @@ function createApplicationCard(props) {
   const interviewedOption = document.createElement("option");
   interviewedOption.value = "interviewed";
   interviewedOption.textContent = "Interviewed";
-  const rejectedOption = document.createElement("option");
-  rejectedOption.value = "rejected";
-  rejectedOption.textContent = "Rejected";
   const offeredOption = document.createElement("option");
   offeredOption.value = "offered";
   offeredOption.textContent = "Offered";
+  const rejectedOption = document.createElement("option");
+  rejectedOption.value = "rejected";
+  rejectedOption.textContent = "Rejected";
+
   changeStatus.append(
     appliedOption,
     interviewedOption,
@@ -87,11 +98,11 @@ function updateCounts() {
   const interviewed = applications.filter(
     (application) => application.jobStatus === "interviewed",
   );
-  const rejected = applications.filter(
-    (application) => application.jobStatus === "rejected",
-  );
   const offered = applications.filter(
     (application) => application.jobStatus === "offered",
+  );
+  const rejected = applications.filter(
+    (application) => application.jobStatus === "rejected",
   );
 
   const totalCount = document.querySelector("#total-count");
@@ -100,22 +111,22 @@ function updateCounts() {
   appliedCount.textContent = `${applied.length} Applied`;
   const interviewedCount = document.querySelector("#interviewed-count");
   interviewedCount.textContent = `${interviewed.length} Interviewed`;
-  const rejectedCount = document.querySelector("#rejected-count");
-  rejectedCount.textContent = `${rejected.length} Rejected`;
   const offeredCount = document.querySelector("#offered-count");
   offeredCount.textContent = `${offered.length} Offered`;
+  const rejectedCount = document.querySelector("#rejected-count");
+  rejectedCount.textContent = `${rejected.length} Rejected`;
 }
 
 // clears columns and renders applications into the column that matches status
 function renderBoard() {
   const appliedList = document.querySelector("#list-applied");
   const interviewedList = document.querySelector("#list-interviewed");
-  const rejectedList = document.querySelector("#list-rejected");
   const offeredList = document.querySelector("#list-offered");
+  const rejectedList = document.querySelector("#list-rejected");
   appliedList.textContent = "";
   interviewedList.textContent = "";
-  rejectedList.textContent = "";
   offeredList.textContent = "";
+  rejectedList.textContent = "";
 
   const filterClick = document.querySelector(".filter-btn.active");
   const selectedFilter = filterClick.dataset.filter;
@@ -142,10 +153,10 @@ function renderBoard() {
       appliedList.append(newCard);
     } else if (application.jobStatus === "interviewed") {
       interviewedList.append(newCard);
-    } else if (application.jobStatus === "rejected") {
-      rejectedList.append(newCard);
     } else if (application.jobStatus === "offered") {
       offeredList.append(newCard);
+    } else if (application.jobStatus === "rejected") {
+      rejectedList.append(newCard);
     }
   });
 
@@ -232,6 +243,33 @@ function handleSearchFilter() {
 }
 const searchBar = document.querySelector("#search-bar");
 searchBar.addEventListener("input", handleSearchFilter);
+
+function handleAddContactInfo(event) {
+  event.preventDefault();
+  const contactNameInput = document.querySelector("#contact-name");
+  const contactEmailInput = document.querySelector("#contact-email");
+  const contactMessageInput = document.querySelector("#contact-message");
+
+  const contactName = contactNameInput.value.trim();
+  const contactEmail = contactEmailInput.value.trim();
+  const contactMessage = contactMessageInput.value;
+
+  const newContactInfo = {
+    contactName,
+    contactEmail,
+    contactMessage,
+  };
+
+  contactInfos.push(newContactInfo);
+  saveContactInfos();
+
+  contactNameInput.value = "";
+  contactEmailInput.value = "";
+  contactMessageInput.value = "";
+}
+
+const addContactForm = document.querySelector("#contact-form");
+addContactForm.addEventListener("submit", handleAddContactInfo);
 
 // init function to load and render application from local storage
 function init() {
