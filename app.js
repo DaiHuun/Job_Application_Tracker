@@ -18,10 +18,13 @@ function loadApplications() {
 }
 
 // Build a list element for a single application
-function createApplicationCard(application) {
+function createApplicationCard(props) {
+  const application = props.application;
+  const onStatusChange = props.onStatusChange;
+  const onDelete = props.onDelete;
+
   const card = document.createElement("li");
   card.classList.add("application-card");
-  card.dataset.id = application.id;
 
   const companyName = document.createElement("p");
   companyName.classList.add("company-name");
@@ -65,8 +68,13 @@ function createApplicationCard(application) {
     offeredOption,
   );
   changeStatus.value = application.jobStatus;
+  changeStatus.addEventListener("change", function (event) {
+    onStatusChange(application.id, event.target.value);
+  });
+  deleteButton.addEventListener("click", function () {
+    onDelete(application.id);
+  });
   actions.append(changeStatus, deleteButton);
-
   card.append(companyName, jobTitle, status, actions);
   return card;
 }
@@ -125,7 +133,11 @@ function renderBoard() {
     });
 
   visibleApplications.forEach(function (application) {
-    const newCard = createApplicationCard(application);
+    const newCard = createApplicationCard({
+      application: application,
+      onStatusChange: handleChangeStatus,
+      onDelete: handleDeleteApplication,
+    });
     if (application.jobStatus === "applied") {
       appliedList.append(newCard);
     } else if (application.jobStatus === "interviewed") {
@@ -180,48 +192,21 @@ const addAppForm = document.querySelector(`#add-app-form`);
 addAppForm.addEventListener("submit", handleAddApplication);
 
 // Delete function to delete application
-function handleDeleteApplication(event) {
-  const card = event.target.closest(".application-card");
-  if (!card) {
-    return;
-  }
-
-  const appId = parseInt(card.dataset.id);
-
-  if (event.target.classList.contains("delete-btn")) {
-    applications = applications.filter(
-      (application) => application.id !== appId,
-    );
-    saveApplications();
-    renderBoard();
-  }
+function handleDeleteApplication(appId) {
+  applications = applications.filter((application) => application.id !== appId);
+  saveApplications();
+  renderBoard();
 }
-const appBoard = document.querySelector(".board");
-appBoard.addEventListener("click", handleDeleteApplication);
 
 // Change Status function
-function handleChangeStatus(event) {
-  const card = event.target.closest(".application-card");
-  if (!card) {
-    return;
-  }
-
-  const appId = parseInt(card.dataset.id);
-
-  if (event.target.classList.contains("select-status-change")) {
-    const foundApplication = applications.find(
-      (application) => application.id === appId,
-    );
-
-    const newStatus = event.target.value;
-    foundApplication.jobStatus = newStatus;
-
-    saveApplications();
-    renderBoard();
-  }
+function handleChangeStatus(appId, newStatus) {
+  const foundApplication = applications.find(
+    (application) => application.id === appId,
+  );
+  foundApplication.jobStatus = newStatus;
+  saveApplications();
+  renderBoard();
 }
-
-appBoard.addEventListener("change", handleChangeStatus);
 
 // Filter function
 function handleFilterClick(event) {
