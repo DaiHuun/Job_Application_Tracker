@@ -110,3 +110,39 @@ nav {
   background: rgba(255, 255, 255, 0.055);
   transform: translateY(-1px);
 }
+
+/* Header and Counts */
+header {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(12px, 3vw, 42px);
+}
+header h1 {
+  flex: 0 0 100%;
+  margin: 0 0 14px;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  font-weight: 760;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+header span {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+#total-count {
+  border-color: rgba(255, 122, 26, 0.35);
+  color: var(--text);
+  background: rgba(255, 122, 26, 0.16);
+}
