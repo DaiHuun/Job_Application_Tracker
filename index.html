@@ -36,7 +36,16 @@
       <button id="add-job-btn">Add Job</button>
     </form>
 
-    <main>
+    <div id="filter-bar">
+      <!-- Filter Buttons -->
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="applied">Applied</button>
+      <button class="filter-btn" data-filter="interviewed">Interviewed</button>
+      <button class="filter-btn" data-filter="rejected">Rejected</button>
+      <button class="filter-btn" data-filter="offered">Offered</button>
+    </div>
+
+    <main class="board">
       <!-- Columns for List of Applications -->
       <div id="col-applied">
         <h2 class="column-title">Applied</h2>
