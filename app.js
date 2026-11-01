@@ -1,11 +1,13 @@
-// List of applications will fill from local storage
+// Arrays to fill form localStorage to draw on screen.
 let applications = [];
 let contactInfos = [];
-// Save applications to local storage
+
+// LOCAL STORAGE FUNCTIONS
+// Save applications to localStorage
 function saveApplications() {
   localStorage.setItem("applicationData", JSON.stringify(applications));
 }
-// Load applications from local storage
+// Load applications from localStorage
 function loadApplications() {
   const raw = localStorage.getItem("applicationData");
   // Handles first visit
@@ -15,9 +17,11 @@ function loadApplications() {
     applications = JSON.parse(raw);
   }
 }
+// Save Contact info to localStorage
 function saveContactInfos() {
   localStorage.setItem("contactData", JSON.stringify(contactInfos));
 }
+// Load Contact info from localStorage
 function loadContactInfos() {
   const raw = localStorage.getItem("contactData");
   if (raw === null) {
@@ -90,7 +94,7 @@ function createApplicationCard(props) {
   return card;
 }
 
-// Function to update counts
+// Update Header Counts
 function updateCounts() {
   const applied = applications.filter(
     (application) => application.jobStatus === "applied",
@@ -117,7 +121,11 @@ function updateCounts() {
   rejectedCount.textContent = `${rejected.length} Rejected`;
 }
 
-// clears columns and renders applications into the column that matches status
+// Redraws the whole board from scratch. It empties the four columns,
+// works out which applications should be visible (based on the active
+// filter button and the search box), builds a card for each, and puts it in
+// the column that matches its status. It is called after every change, so
+// the screen always matches the data.
 function renderBoard() {
   const appliedList = document.querySelector("#list-applied");
   const interviewedList = document.querySelector("#list-interviewed");
@@ -163,7 +171,7 @@ function renderBoard() {
   updateCounts();
 }
 
-// reads inputs, adds new application to array, and renders board
+// Reads inputs, adds new application to array, and renders board
 function handleAddApplication(event) {
   event.preventDefault();
   const companyNameInput = document.querySelector("#company-name-input");
@@ -202,14 +210,16 @@ function handleAddApplication(event) {
 const addAppForm = document.querySelector(`#add-app-form`);
 addAppForm.addEventListener("submit", handleAddApplication);
 
-// Delete function to delete application
+// Removes the application with the given id. filter() keeps every
+// application whose id is NOT the one being deleted (!==), which drops
+// exactly that one. We replace the array with the result, save, and redraw.
 function handleDeleteApplication(appId) {
   applications = applications.filter((application) => application.id !== appId);
   saveApplications();
   renderBoard();
 }
 
-// Change Status function
+// Finds the application with the given id and gives it a new status.
 function handleChangeStatus(appId, newStatus) {
   const foundApplication = applications.find(
     (application) => application.id === appId,
@@ -219,7 +229,9 @@ function handleChangeStatus(appId, newStatus) {
   renderBoard();
 }
 
-// Filter function
+// Runs when anything inside the filter bar is clicked. One listener on the
+// whole bar handles all the buttons,
+// instead of attaching a separate listener to each button.
 function handleFilterClick(event) {
   const filterButton = event.target.closest(".filter-btn");
   if (!filterButton) {
@@ -244,6 +256,9 @@ function handleSearchFilter() {
 const searchBar = document.querySelector("#search-bar");
 searchBar.addEventListener("input", handleSearchFilter);
 
+// Runs when the contact form is submitted. It validates the input, sends
+// it to a mock server, and shows a success or error message. "async" lets
+// us use "await" inside to wait for the network request to finish.
 async function handleAddContactInfo(event) {
   event.preventDefault();
   const contactNameInput = document.querySelector("#contact-name");
@@ -261,6 +276,9 @@ async function handleAddContactInfo(event) {
     contactEmail,
     contactMessage,
   );
+
+  // If there is a problem, show it in red and stop. "return" exits the
+  // function, so nothing below runs.
   if (errorMessage !== "") {
     contactFeedback.textContent = errorMessage;
     contactFeedback.classList.remove("success");
@@ -287,11 +305,13 @@ async function handleAddContactInfo(event) {
     });
 
     // fetch only throws on network failure
+    // That means a server error like 404 or 500 does NOT throw by itself.
+    // response.ok is false for those, so we throw our own error, which jumps
+    // straight to "catch" below.
     if (!response.ok) {
       throw new Error("Server responded with status " + response.status);
     }
 
-    // Only save and clear after the request succeeded
     contactInfos.push(newContactInfo);
     saveContactInfos();
 
@@ -302,6 +322,8 @@ async function handleAddContactInfo(event) {
     contactFeedback.textContent = "Thanks! Your message was sent.";
     contactFeedback.classList.add("success");
   } catch (error) {
+    // The request failed (offline, or the server returned an error).
+    // The form is left filled in so the user can try again.
     contactFeedback.textContent =
       "Sorry, your message could not be sent. Please try again.";
     contactFeedback.classList.add("error");
@@ -313,7 +335,8 @@ async function handleAddContactInfo(event) {
 const addContactForm = document.querySelector("#contact-form");
 addContactForm.addEventListener("submit", handleAddContactInfo);
 
-// Returns an error message, or "" if the input is valid
+// Checks the contact form values one rule at a time and returns the first
+// error message it finds, or "" if everything is valid.
 function validateContact(name, email, message) {
   if (name === "" || email === "" || message === "") {
     return "Please fill out all fields.";
@@ -331,7 +354,8 @@ function validateContact(name, email, message) {
   return "";
 }
 
-// Function show one page, and hide the others
+// All three pages are in the HTML at once. This shows one and hides the
+// others, and highlights the matching link in the nav bar.
 function showPage(pageName) {
   document.querySelectorAll(".page").forEach(function (page) {
     page.classList.add("hidden");
@@ -343,6 +367,7 @@ function showPage(pageName) {
   });
 }
 
+// Runs when anything inside the nav bar is clicked
 function handleNavClick(event) {
   const navLink = event.target.closest(".nav-link");
   if (!navLink) {
@@ -355,7 +380,8 @@ function handleNavClick(event) {
 const navBar = document.querySelector("#nav-bar");
 navBar.addEventListener("click", handleNavClick);
 
-// init function to load and render application from local storage
+// Runs once when the page loads: bring saved data back from localStorage,
+// then draw the board (which also fills in the header counts).
 function init() {
   loadApplications();
   loadContactInfos();
