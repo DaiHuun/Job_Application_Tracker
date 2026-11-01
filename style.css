@@ -115,8 +115,6 @@ nav {
 header {
   position: relative;
   z-index: 1;
-  grid-column: 2;
-  grid-row: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -149,8 +147,6 @@ header span {
 .page {
   position: relative;
   z-index: 1;
-  grid-column: 2;
-  grid-row: 2;
   display: block;
   align-self: start;
   width: min(100%, 1100px);
