@@ -19,31 +19,31 @@ A small, dependency-free web app for tracking job applications through each stag
 
 Fill in the company, job title, status, date applied, and notes, then click **Add Job**. The header counts update immediately.
 
-
+<img width="1280" height="800" alt="add-application" src="https://github.com/user-attachments/assets/12088150-5295-42da-9409-c443acfeb6e6" />
 
 ### Applications board
 
 Applications are grouped by status. Each card has a status dropdown and a delete button.
 
-
+<img width="1280" height="1137" alt="applications-board" src="https://github.com/user-attachments/assets/1826f4f6-f40b-4059-8d75-2fd6f37e21b1" />
 
 ### Filtering and search
 
 Use the filter buttons to show a single status, and the search box to narrow by company name. The two work together.
 
-
+<img width="1280" height="964" alt="applications-filtered" src="https://github.com/user-attachments/assets/2adaaef5-5fc4-4d7a-8969-b3dfab2c5a39" />
 
 ### Contact form
 
 The form validates input before sending. Here a message that is too short shows an inline error.
 
-
+<img width="1280" height="906" alt="contact" src="https://github.com/user-attachments/assets/9e3ee8da-0496-4d3e-bbcc-66f2b56a09bf" />
 
 ### Mobile layout
 
 On phones, the nav, filters, and board columns stack into a single column.
 
-
+<img width="390" height="2485" alt="applications-mobile" src="https://github.com/user-attachments/assets/8134edf9-935b-49ad-9465-ee235c807d53" />
 
 ## Tech Stack
 
